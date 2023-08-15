@@ -19,7 +19,7 @@ public class AwsSMTPService {
             @Value("${cloud.aws.ses.from}") String from
     ) {
         this.amazonSimpleEmailService = amazonSimpleEmailService;
-        this.from = "blackroach@curiboard.com";
+        this.from = "no-reply@" + from;
     }
 
     public void send(String subject, String content, String... to) {

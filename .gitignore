@@ -36,7 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-application-jwt.properties
-serviceAccountKey.json
+application-local.properties
 
 .DS_Store

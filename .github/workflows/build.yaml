@@ -4,7 +4,6 @@ name: CI Pipeline
 on:
   push:
     branches: [ main ]
-
 permissions:
   contents: read
   issues: read
@@ -22,19 +21,6 @@ jobs:
           distribution: 'corretto'
           java-version: 17
           cache: 'gradle'
-
-      - name: Set up application.properties
-        run: |
-          touch ./src/main/resources/application.properties
-          echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
-
-      - name: Set up serviceAccountKey.json
-        id: create-json
-        uses: jsdaniell/create-json@v1.2.2
-        with:
-          name: "serviceAccountKey.json"
-          json: ${{ secrets.SERVICEACCOUNTKEY }}
-          dir: "./src/main/resources/"
 
       - name: Cache Gradle packages
         uses: actions/cache@v2
@@ -71,6 +57,11 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: spring/curi-scheduler
           IMAGE_TAG: ${{ steps.image.outputs.version }}
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SQS_QUEUE_NAME: ${{ secrets.AWS_SQS_QUEUE_NAME }}
+          AWS_SQS_QUEUE_URL: ${{ secrets.AWS_SQS_QUEUE_URL }}
+          ENVIRONMENT: build
         run: |
           echo "::set-output name=ecr_repository::$ECR_REPOSITORY"
           echo "::set-output name=image_tag::$IMAGE_TAG"
