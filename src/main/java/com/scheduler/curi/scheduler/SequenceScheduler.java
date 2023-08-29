@@ -23,7 +23,7 @@ public class SequenceScheduler {
     private final JobLauncher jobLauncher;
     private final SequenceJobConfiguration jobConfiguration;
 
-    @Scheduled(cron = "0 0 9-20/1 * * *")
+    @Scheduled(cron = "${spring.sequence.cron}")
     public void runJob() {
         JobParameters parameters = new JobParametersBuilder()
                 .addDate("startTime", new Date())
