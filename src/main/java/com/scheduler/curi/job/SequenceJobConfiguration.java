@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 @EnableBatchProcessing
@@ -63,7 +64,7 @@ public class SequenceJobConfiguration {
     }
 
     @Bean
-    public ItemReader<SequenceMessage> sequenceMessageReader() {
+    public ItemReader<SequenceMessage> sequenceMessageReader(@Value("#{jobParameters['startTime']}") Date startTime) {
         return new IteratorItemReader<>(sequenceMessageService.getAllMessageBeforeNow(LocalDateTime.now()));
     }
 
