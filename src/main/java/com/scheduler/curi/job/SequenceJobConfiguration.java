@@ -57,7 +57,7 @@ public class SequenceJobConfiguration {
     public Step sequenceMessageStep() {
         return stepBuilderFactory.get("sequenceMessageStep")
                 .<SequenceMessage, SequenceMessageDto> chunk(chunkSize)
-                .reader(sequenceMessageReader())
+                .reader(sequenceMessageReader(new Date()))
                 .processor(sequenceMessageProcessor())
                 .writer(sequenceMessageWriter())
                 .build();
