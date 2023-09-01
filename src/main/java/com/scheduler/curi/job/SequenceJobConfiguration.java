@@ -48,7 +48,6 @@ public class SequenceJobConfiguration {
     @Bean
     public Job sequenceMessageJob() {
         return jobBuilderFactory.get("sequenceMessageJob")
-                .incrementer(incrementer())
                 .start(sequenceMessageStep())
                 .build();
     }
