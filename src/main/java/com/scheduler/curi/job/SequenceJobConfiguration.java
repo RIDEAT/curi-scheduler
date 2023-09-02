@@ -13,6 +13,7 @@ import org.springframework.batch.core.JobParametersIncrementer;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
@@ -50,12 +51,13 @@ public class SequenceJobConfiguration {
     public Job sequenceMessageJob() {
         return jobBuilderFactory.get("sequenceMessageJob")
                 .incrementer(incrementer())
-                .start(sequenceMessageStep())
+                .start(sequenceMessageStep(null))
                 .build();
     }
 
     @Bean
-    public Step sequenceMessageStep() {
+    @JobScope
+    public Step sequenceMessageStep(@Value("#{jobParameters['startTime']}")Date startTime) {
         return stepBuilderFactory.get("sequenceMessageStep")
                 .<SequenceMessage, SequenceMessageDto> chunk(chunkSize)
                 .reader(sequenceMessageReader())
@@ -64,6 +66,7 @@ public class SequenceJobConfiguration {
                 .build();
     }
 
+    @Bean
     public ItemReader<SequenceMessage> sequenceMessageReader() {
         return new IteratorItemReader<>(sequenceMessageService.getAllMessageBeforeNow(LocalDateTime.now()));
     }
