@@ -11,10 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersIncrementer;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.*;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
@@ -51,23 +48,23 @@ public class SequenceJobConfiguration {
     public Job sequenceMessageJob() {
         return jobBuilderFactory.get("sequenceMessageJob")
                 .incrementer(incrementer())
-                .start(sequenceMessageStep(null))
+                .start(sequenceMessageStep())
                 .build();
     }
 
     @Bean
-    @JobScope
-    public Step sequenceMessageStep(@Value("#{jobParameters['startTime']}")Date startTime) {
+    public Step sequenceMessageStep() {
         return stepBuilderFactory.get("sequenceMessageStep")
                 .<SequenceMessage, SequenceMessageDto> chunk(chunkSize)
-                .reader(sequenceMessageReader())
+                .reader(sequenceMessageReader(null))
                 .processor(sequenceMessageProcessor())
                 .writer(sequenceMessageWriter())
                 .build();
     }
 
     @Bean
-    public ItemReader<SequenceMessage> sequenceMessageReader() {
+    @StepScope
+    public ItemReader<SequenceMessage> sequenceMessageReader(@Value("#{jobParameters['startTime']}")Date startTime) {
         return new IteratorItemReader<>(sequenceMessageService.getAllMessageBeforeNow(LocalDateTime.now()));
     }
 
