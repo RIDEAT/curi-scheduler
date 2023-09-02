@@ -49,6 +49,7 @@ public class SequenceJobConfiguration {
     @Bean
     public Job sequenceMessageJob() {
         return jobBuilderFactory.get("sequenceMessageJob")
+                .incrementer(incrementer())
                 .start(sequenceMessageStep())
                 .build();
     }
@@ -57,14 +58,13 @@ public class SequenceJobConfiguration {
     public Step sequenceMessageStep() {
         return stepBuilderFactory.get("sequenceMessageStep")
                 .<SequenceMessage, SequenceMessageDto> chunk(chunkSize)
-                .reader(sequenceMessageReader(new Date()))
+                .reader(sequenceMessageReader())
                 .processor(sequenceMessageProcessor())
                 .writer(sequenceMessageWriter())
                 .build();
     }
 
-    @Bean
-    public ItemReader<SequenceMessage> sequenceMessageReader(@Value("#{jobParameters['startTime']}") Date startTime) {
+    public ItemReader<SequenceMessage> sequenceMessageReader() {
         return new IteratorItemReader<>(sequenceMessageService.getAllMessageBeforeNow(LocalDateTime.now()));
     }
 
